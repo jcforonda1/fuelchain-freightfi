@@ -1,0 +1,15 @@
+{
+  "name": "fuelchain-freightfi",
+  "version": "1.0.0",
+  "description": "XRPL Testnet wallet demo",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "freightfi": "node freightfi.js",
+    "escrow": "node escrow.js"
+  },
+  "dependencies": {
+    "xrpl": "^3.0.0"
+  }
+}
