@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node index.js",
     "freightfi": "node freightfi.js",
-    "escrow": "node escrow.js"
+    "escrow": "node escrow.js",
+    "oracle": "node oracle-multisig.js"
   },
   "dependencies": {
     "xrpl": "^3.0.0"
