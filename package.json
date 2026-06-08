@@ -8,9 +8,13 @@
     "start": "node index.js",
     "freightfi": "node freightfi.js",
     "escrow": "node escrow.js",
-    "oracle": "node oracle-multisig.js"
+    "oracle": "node oracle-multisig.js",
+    "toll": "node toll-oracle.js",
+    "dispute": "node dispute-resolution.js",
+    "factoring": "node radian-factoring.js",
+    "govescrow": "node govescrow.js"
   },
   "dependencies": {
-    "xrpl": "^3.0.0"
+    "xrpl": "^4.0.0"
   }
 }
