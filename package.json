@@ -12,7 +12,8 @@
     "toll": "node toll-oracle.js",
     "dispute": "node dispute-resolution.js",
     "factoring": "node radian-factoring.js",
-    "govescrow": "node govescrow.js"
+    "govescrow": "node govescrow.js",
+    "acpm": "node acpm-oracle.js"
   },
   "dependencies": {
     "xrpl": "^4.0.0"
