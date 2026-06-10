@@ -13,7 +13,8 @@
     "dispute": "node dispute-resolution.js",
     "factoring": "node radian-factoring.js",
     "govescrow": "node govescrow.js",
-    "acpm": "node acpm-oracle.js"
+    "acpm": "node acpm-oracle.js",
+    "cargobank": "node cargo-bank.js"
   },
   "dependencies": {
     "xrpl": "^4.0.0"
