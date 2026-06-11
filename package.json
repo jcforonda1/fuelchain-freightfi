@@ -14,7 +14,8 @@
     "factoring": "node radian-factoring.js",
     "govescrow": "node govescrow.js",
     "acpm": "node acpm-oracle.js",
-    "cargobank": "node cargo-bank.js"
+    "cargobank": "node cargo-bank.js",
+    "soat": "node soat-defi.js"
   },
   "dependencies": {
     "xrpl": "^4.0.0"
