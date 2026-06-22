@@ -19,6 +19,7 @@
     "points": "node vehix-points.js"
   },
   "dependencies": {
+    "five-bells-condition": "^5.0.1",
     "xrpl": "^4.0.0"
   }
 }
