@@ -9,9 +9,7 @@ const TESTNET_URL = "wss://s.altnet.rippletest.net:51233";
 const EXPLORER    = "https://testnet.xrpl.org/transactions";
 
 // ── Datos del lote de ACPM ────────────────────────────────────────────────────
-
 const BATCH_ID = `ACPM-${new Date().toISOString().slice(0,10).replace(/-/g,"")}-${crypto.randomBytes(3).toString("hex").toUpperCase()}`;
-
 const BATCH = {
   id               : BATCH_ID,
   producto         : "ACPM (Diesel B5)",
@@ -22,7 +20,6 @@ const BATCH = {
 };
 
 // ── Marcador químico (Solvent Yellow 124 — obligatorio Colombia / UE) ─────────
-
 const MARCADOR = {
   compuesto        : "Solvent Yellow 124",
   concentracion_ppm: 6.0,
@@ -32,7 +29,6 @@ const MARCADOR = {
 };
 
 // ── Ruta declarada: Bogotá → Villavicencio ────────────────────────────────────
-
 const RUTA = [
   { nombre: "Terminal Terpel Bogotá",        lat:  4.711, lon: -74.072 },
   { nombre: "Chipaque",                      lat:  4.450, lon: -74.050 },
@@ -42,18 +38,15 @@ const RUTA = [
 ];
 
 // ── Lecturas GPS del cisterna ─────────────────────────────────────────────────
-
 const GPS_LECTURAS = [
   { ts: "08:00", nombre: "Salida terminal Terpel", lat:  4.711, lon: -74.072 },
   { ts: "09:30", nombre: "Desviación detectada",   lat:  4.600, lon: -74.380 }, // 36 km off
   { ts: "10:45", nombre: "Retoma ruta — Caquezá",  lat:  4.400, lon: -73.950 },
   { ts: "12:30", nombre: "Llegada EDS objetivo",   lat:  4.142, lon: -73.625 },
 ];
-
 const GPS_ALERTA_UMBRAL_KM = 5;
 
 // ── RUNT del conductor y vehículo ─────────────────────────────────────────────
-
 const RUNT = {
   conductor: {
     nombre     : "Alirio Rodríguez Mora",
@@ -71,7 +64,6 @@ const RUNT = {
 };
 
 // ── EDS ───────────────────────────────────────────────────────────────────────
-
 const EDS = {
   nombre             : "EDS El Camino",
   nit                : "901.234.567-8",
@@ -81,7 +73,6 @@ const EDS = {
 };
 
 // ── Console helpers ───────────────────────────────────────────────────────────
-
 const W    = 70;
 const hr   = (c = "─") => c.repeat(W);
 const col  = (k, v) => console.log(`  ${String(k).padEnd(36)}: ${v}`);
@@ -109,7 +100,6 @@ function buildMemo(type, payload) {
 }
 
 // ── Haversine ─────────────────────────────────────────────────────────────────
-
 function haversineKm(lat1, lon1, lat2, lon2) {
   const R    = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -125,7 +115,6 @@ function distToRuta(lat, lon) {
 }
 
 // ── MPT helper — Sequence(4B) + AccountID(20B) = 48 hex = 192 bits ───────────
-
 function computeMPTIssuanceID(issuerAddress, sequence) {
   const seqBuf    = Buffer.alloc(4);
   seqBuf.writeUInt32BE(sequence >>> 0, 0);
@@ -134,11 +123,9 @@ function computeMPTIssuanceID(issuerAddress, sequence) {
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
-
 async function runAcpmOracle() {
   const client  = new Client(TESTNET_URL);
   const txLinks = [];
-
   const trackTx = (label, hash) => {
     txLinks.push({ label, url: `${EXPLORER}/${hash}` });
     console.log(`\n  🔗  ${EXPLORER}/${hash}`);
@@ -194,6 +181,9 @@ async function runAcpmOracle() {
     console.log("\n  → Sin MPT válido el mayorista no puede recibir el despacho.");
 
     // TX 1 — MPTokenIssuanceCreate
+    // Metadato conforme al estándar XLS-89 (discoverable por exploradores e
+    // indexadores). Los datos del lote (batch, marcador, origen) van en el Memo,
+    // que es donde corresponde la trazabilidad detallada.
     const mptCreateTx = await client.autofill({
       TransactionType: "MPTokenIssuanceCreate",
       Account        : wEcopetrol.address,
@@ -201,21 +191,25 @@ async function runAcpmOracle() {
       MaximumAmount  : String(BATCH.volumen_galones),
       Flags          : 0x0020, // tfMPTCanTransfer — permite transferencias entre holders (no solo emisor)
       MPTokenMetadata: encodeMPTokenMetadata({
+        ticker        : "ACPM",
+        name          : "Vehix ACPM Batch",
+        desc          : `Lote ${BATCH.id} de ACPM (Diesel B5) trazable, ${BATCH.volumen_galones} gal, origen ${BATCH.origen}. Marcador ${MARCADOR.compuesto} ${MARCADOR.concentracion_ppm} ppm. Hash marcador ${markerHash.slice(0,16)}.`,
+        icon          : "https://vehix.co/assets/acpm-icon.png",
+        asset_class   : "rwa",
+        asset_subclass: "other",
+        issuer_name   : "Vehix",
+      }),
+      Memos: buildMemo("emision-lote", {
         batch_id       : BATCH.id,
-        producto       : BATCH.producto,
-        volumen_galones: BATCH.volumen_galones,
+        tipo_evento    : "EMISION_MPT_ACPM",
+        volumen        : BATCH.volumen_galones,
         origen         : BATCH.origen,
         marker_hash    : markerHash,
         marker_compound: MARCADOR.compuesto,
         fecha_cert     : MARCADOR.fecha_cert,
       }),
-      Memos: buildMemo("emision-lote", {
-        batch_id   : BATCH.id,
-        tipo_evento: "EMISION_MPT_ACPM",
-        volumen    : BATCH.volumen_galones,
-        origen     : BATCH.origen,
-      }),
     });
+
     const mptSeq    = mptCreateTx.Sequence;
     const mptResult = await client.submitAndWait(wEcopetrol.sign(mptCreateTx).tx_blob);
     const mptID     = computeMPTIssuanceID(wEcopetrol.address, mptSeq);
@@ -272,7 +266,6 @@ async function runAcpmOracle() {
     col("  MPT recibido — emisor (hex)", issuerHex.slice(0, 12) + "…");
     col("  Emisor esperado (Ecopetrol)", ecopetrolHex.slice(0, 12) + "…");
     col("  Verificación origen MPT", mptDeEcopetrol ? "VÁLIDO — proviene de Ecopetrol ✓" : "INVÁLIDO ✗");
-
     if (!mptDeEcopetrol) throw new Error("MPT de origen inválido — carga bloqueada");
 
     col("  Cisterna RUNT", `${RUNT.vehiculo.placa} · capacidad ${RUNT.vehiculo.capacidad_galones.toLocaleString()} gal ✓`);
@@ -359,7 +352,6 @@ async function runAcpmOracle() {
     // TX 7 — Mayorista autoriza la ruta (levanta bloqueo)
     if (entregaBloqueada) {
       console.log("\n  Mayorista recibe alerta → autoriza desvío (cierre vial) → levanta bloqueo…");
-
       const autRutaResult = await client.submitAndWait(
         wMayorista.sign(await client.autofill({
           TransactionType: "Payment",
@@ -399,7 +391,6 @@ async function runAcpmOracle() {
     col("  GPS Geovalla", distEDS * 1000 <= GEOVALLA_M
       ? `${(distEDS * 1000).toFixed(0)} m ≤ ${GEOVALLA_M} m → DENTRO ✓`
       : `${(distEDS * 1000).toFixed(0)} m > ${GEOVALLA_M} m → FUERA ✗`);
-
     if (distEDS * 1000 > GEOVALLA_M)
       throw new Error(`Cisterna fuera de geovalla: ${(distEDS * 1000).toFixed(0)} m`);
 
@@ -411,7 +402,6 @@ async function runAcpmOracle() {
     col("  Vehículo", `${RUNT.vehiculo.placa} — ${RUNT.vehiculo.tipo}`);
     col("  Capacidad tanque cisterna", `${RUNT.vehiculo.capacidad_galones.toLocaleString()} gal`);
     col("  Transporte peligroso RUNT", RUNT.vehiculo.habilitado_peligroso ? "HABILITADO ✓" : "NO HABILITADO ✗");
-
     if (!RUNT.conductor.habilitado || !RUNT.vehiculo.habilitado_peligroso)
       throw new Error("Conductor o vehículo no habilitado en RUNT");
 
@@ -419,7 +409,6 @@ async function runAcpmOracle() {
     const qrToken = crypto.createHash("sha256")
       .update(`${EDS.nit}|${BATCH.id}|${new Date().toISOString().slice(0, 10)}`)
       .digest("hex");
-
     console.log();
     col("  QR EDS escaneado por camionero", qrToken.slice(0, 20) + "…");
     col("  NIT EDS", EDS.nit);
@@ -507,7 +496,6 @@ async function runAcpmOracle() {
     // Resumen
     // ═════════════════════════════════════════════════════════════════════
     paso("R", "Resumen — Trazabilidad ACPM cadena completa");
-
     console.log(`
   ┌────────────────────────────────────────────────────────────────────┐
   │  FREIGHTFI — ACPM Oracle  Resumen de Trazabilidad                  │
