@@ -20,7 +20,7 @@ It solves real problems affecting hundreds of thousands of truck drivers: 90-day
 
 ---
 
-## Code proof: 13 active modules (~101 transactions on Testnet, all tesSUCCESS)
+## Code proof: 14 active modules (~108 transactions on Testnet, all tesSUCCESS)
 
 The project began as FreightFi (the three core modules) and grew into the complete Vehix platform. Each module uses native XRPL primitives, with no external smart contracts.
 
@@ -39,10 +39,15 @@ The project began as FreightFi (the three core modules) and grew into the comple
 | 11 | Vehix Shield (SOAT) | soat-defi.js | 21 | Tokenized multi-fleet insurance (MPT) |
 | 12 | Vehix Points (VXP) | vehix-points.js | 16 | Loyalty points (transferable MPT) |
 | 13 | Vehix FOPAT | fopat-vault-oracle.cjs | 2 | Driver protection fund — escrow disbursement + 2-of-3 oracle multisig |
+| 14 | Vehix Smart Quota | cuota-inteligente-oracle.cjs | 7 | Smart subsidized-fuel quota as MPT + multi-factor score |
+
+### About module 14 (Vehix Smart Quota)
+
+The **Smart Quota of ACPM** (Cuota Inteligente) turns a flat, by-category fuel subsidy into a data-verified quota. Each vehicle earns a monthly subsidized-fuel quota derived from its real consumption pattern. The quota is issued as an MPT (a "subsidized fuel credit" balance); each verified dispensing debits it. Consumption within the quota is subsidized; the excess pays full price and is flagged for audit. A multi-factor score combines RUNT data (engine displacement, modality), observed efficiency (GPS / gallons), GPS pattern score, fuel-station check, and a gallons-vs-km cross-check. The model adapts to three modalities — school transport, intercity passenger buses, and last-mile package delivery — each anchored to its own service evidence (school contract, authorized corridor, RNDC manifest).
 
 ### About module 13 (Vehix FOPAT)
 
-The **Driver Protection Fund** (Fondo de Protección al Transportador) is designed to respect the Colombian legal framework. Instead of taking deposits from the public (which would require a financial license), the model operates through already-authorized solidarity-sector cooperatives, which take deposits from and lend exclusively to their members. The module demonstrates the disbursement of the contribution as an advance credit (not deposit-taking) via native escrow, released with 2-of-3 multisig (anti-fraud) and full traceability in the Memos (national ID, plate, vehicle registry, tax report).
+The **Driver Protection Fund** is designed to respect the Colombian legal framework. Instead of taking deposits from the public (which would require a financial license), the model operates through already-authorized solidarity-sector cooperatives, which take deposits from and lend exclusively to their members. The module demonstrates the disbursement of the contribution as an advance credit (not deposit-taking) via native escrow, released with 2-of-3 multisig (anti-fraud) and full traceability in the Memos.
 
 ---
 
@@ -50,7 +55,7 @@ The **Driver Protection Fund** (Fondo de Protección al Transportador) is design
 
 | # | Module | File | What it does |
 |---|--------|------|--------------|
-| 14 | Carbon MPT Settlement | carbon-mpt-settlement.cjs | Tokenizes CO2 as MPT and settles with the European buyer via verified tonnage |
+| 15 | Carbon MPT Settlement | carbon-mpt-settlement.cjs | Tokenizes CO2 as MPT and settles with the European buyer via verified tonnage |
 | - | Milestone Payment | milestone-payment-escrow.cjs | Pays the development team by milestones via native escrow |
 
 ---
@@ -66,7 +71,7 @@ The **Driver Protection Fund** (Fondo de Protección al Transportador) is design
 
 ## Legal note
 
-Modules involving financial flows (FOPAT, factoring, credit) run on Testnet with fictitious funds, as a technical demonstration. Any operation with real money must first be validated by a professional in Colombian financial and cooperative law. This repository is a technical proof of concept.
+Modules involving financial flows (FOPAT, Smart Quota, factoring, credit) run on Testnet with fictitious funds, as a technical demonstration. Any operation with real money must first be validated by a professional in Colombian financial and cooperative law. This repository is a technical proof of concept.
 
 ---
 ---
@@ -93,7 +98,7 @@ Resuelve problemas reales que afectan a cientos de miles de camioneros: retrasos
 
 ---
 
-## Prueba de código: 13 módulos activos (~101 transacciones en Testnet, todas tesSUCCESS)
+## Prueba de código: 14 módulos activos (~108 transacciones en Testnet, todas tesSUCCESS)
 
 El proyecto comenzó como FreightFi (los tres módulos principales) y evolucionó hasta la plataforma completa Vehix. Cada módulo usa primitivas nativas del XRPL, sin contratos inteligentes externos.
 
@@ -112,10 +117,15 @@ El proyecto comenzó como FreightFi (los tres módulos principales) y evolucion�
 | 11 | Vehix Shield (SOAT) | soat-defi.js | 21 | Seguro multiflota tokenizado (MPT) |
 | 12 | Vehix Points (VXP) | vehix-points.js | 16 | Puntos de fidelidad (MPT transferibles) |
 | 13 | Vehix FOPAT | fopat-vault-oracle.cjs | 2 | Fondo de protección al transportador — desembolso vía escrow + multifirma 2 de 3 |
+| 14 | Vehix Cuota Inteligente | cuota-inteligente-oracle.cjs | 7 | Cuota de combustible subsidiado como MPT + score multifactor |
+
+### Sobre el módulo 14 (Cuota Inteligente)
+
+La **Cuota Inteligente de ACPM** convierte el subsidio plano por categoría en una cuota verificada por datos. Cada vehículo gana una cuota mensual de diésel subsidiado derivada de su patrón real de consumo. La cuota se emite como un MPT (un saldo de "crédito de combustible subsidiado"); cada despacho verificado la debita. El consumo dentro de la cuota es subsidiado; el exceso paga precio pleno y queda marcado para auditoría. Un score multifactor combina datos del RUNT (cilindraje, modalidad), eficiencia observada (GPS / galones), score del patrón GPS, verificación de la EDS y el cruce galones-vs-km. El modelo se adapta a tres modalidades — transporte escolar, bus intermunicipal de pasajeros y paquetería de última milla — cada una anclada a su propia evidencia de servicio (contrato escolar, corredor autorizado, manifiesto RNDC).
 
 ### Sobre el módulo 13 (Vehix FOPAT)
 
-El **Fondo de Protección al Transportador** está diseñado respetando el marco legal colombiano. En lugar de captar dinero del público (lo que requeriría licencia financiera), el modelo opera a través de cooperativas del sector solidario ya autorizadas, que captan y prestan exclusivamente entre sus asociados. El módulo demuestra el desembolso del aporte como crédito por adelantado (no captación) vía escrow nativo, liberado con multifirma 2 de 3 (anti-fraude) y trazabilidad completa en los Memos (cédula, placa, RUNT, DIAN).
+El **Fondo de Protección al Transportador** está diseñado respetando el marco legal colombiano. En lugar de captar dinero del público (lo que requeriría licencia financiera), el modelo opera a través de cooperativas del sector solidario ya autorizadas, que captan y prestan exclusivamente entre sus asociados. El módulo demuestra el desembolso del aporte como crédito por adelantado (no captación) vía escrow nativo, liberado con multifirma 2 de 3 (anti-fraude) y trazabilidad completa en los Memos.
 
 ---
 
@@ -123,7 +133,7 @@ El **Fondo de Protección al Transportador** está diseñado respetando el marco
 
 | # | Módulo | Archivo | Qué hace |
 |---|--------|---------|----------|
-| 14 | Liquidación MPT de carbono | carbon-mpt-settlement.cjs | Tokeniza el CO2 como MPT y liquida con el comprador europeo mediante tonelaje verificado |
+| 15 | Liquidación MPT de carbono | carbon-mpt-settlement.cjs | Tokeniza el CO2 como MPT y liquida con el comprador europeo mediante tonelaje verificado |
 | - | Pago por hitos | milestone-payment-escrow.cjs | Paga al equipo de desarrollo por hitos mediante escrow nativo |
 
 ---
@@ -139,4 +149,4 @@ El **Fondo de Protección al Transportador** está diseñado respetando el marco
 
 ## Nota legal
 
-Los módulos que involucran flujos financieros (FOPAT, factoring, crédito) operan en la red de pruebas con dinero ficticio, como demostración técnica. Cualquier operación con dinero real debe ser validada previamente por un profesional en derecho financiero y cooperativo colombiano. Este repositorio es una prueba de concepto técnica.
+Los módulos que involucran flujos financieros (FOPAT, Cuota Inteligente, factoring, crédito) operan en la red de pruebas con dinero ficticio, como demostración técnica. Cualquier operación con dinero real debe ser validada previamente por un profesional en derecho financiero y cooperativo colombiano. Este repositorio es una prueba de concepto técnica.
